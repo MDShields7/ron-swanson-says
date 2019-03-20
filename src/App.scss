@@ -1,0 +1,43 @@
+
+$clr-white: white;
+$clr-grey: grey;
+$clr-primary: rgb(54, 73, 54);
+$clr-secondary: rgb(16, 20, 40);
+$clr-btn:rgb(201, 201, 201);
+$clr-btn-hover:rgb(151, 206, 155);
+$full-hght: 100%;
+$full-wdth: 100%;
+$sect-hght: 50%;
+$sect-hght-min: 300px;
+$sect-wdth-mrgn: 10%;
+
+.mrgn-t5 {
+  margin-top: 5%;
+}
+.mrgn-t15 {
+  margin-top: 15%;
+}
+.mrgn-t15 {
+  margin-top: 25%;
+}
+.vert-rule {
+  height: $full-hght;
+}
+.hor-rule {
+  height: $full-hght;
+}
+.vert-rule-sect {
+  height: $sect-hght;
+  min-height: $sect-hght-min;
+}
+.hor-rule-sect {
+  height: $full-hght;
+}
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
