@@ -89,6 +89,33 @@ app.post("/api/visitor/register", (req, res) => {
     })
 })
 
+function checkSize(item, type) {
+  let size = array[i]['saying'].length;
+  if (type = 'small') {
+    if (5 > size) {
+      return true;
+    }
+  } else if (type = 'medium') {
+    if (12 >= size && size >= 5) {
+      return true;
+    }
+  } else if (type = 'large') {
+    if (12 < size) {
+      return true;
+    }
+  }
+}
+function loopThruResults(array, type) {
+  let newArr = []
+  for (let i = 0; i < array.length; i++) {
+    if (checkSize(array[i], type)) {
+      newArr.push(array[i])
+    }
+  }
+  console.log(newArr);
+
+}
+
 const path = require("path");
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));

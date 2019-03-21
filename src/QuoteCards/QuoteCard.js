@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 // import './QuoteCard.scss';
 import StarsCard from './StarsCard'
+// import { id } from 'postcss-selector-parser';
 
 export default class QuoteCard extends Component {
   constructor(props) {
@@ -10,23 +11,24 @@ export default class QuoteCard extends Component {
       quote: props.quote,
     }
   }
-  // componentDidMount = (prevProps) => {
-  //   if ( this.props.quote !== prevProps.quote){
-  //     this.setState({quote: this.props.quote})
-  //   }
-  // }
+  componentDidUpdate = (prevProps) => {
+    if (this.props.quote.id !== prevProps.quote.id) {
+      this.setState({ quote: this.props.quote })
+    }
+  }
   render() {
 
-    const { saying, stars, myStars } = this.state.quote;
-
+    const { id, saying, type, stars, myStars } = this.state.quote;
+    console.log('id:', id, ', saying:', saying, ' type:', type, ' stars:', stars, ' myStars:', myStars)
     return (
       <div className='card' >
         <div className='hor-rule-card'>
           <p className='quote'>{saying}</p>
+          <p className='quote'>id #:{id}</p>
           <p>Rating</p>
-          <StarsCard stars={stars} />
+          <StarsCard stars={stars} rate={false} />
           <p>My Rating</p>
-          <StarsCard stars={myStars} />
+          <StarsCard stars={myStars} rate={true} />
         </div>
       </div>
     )
