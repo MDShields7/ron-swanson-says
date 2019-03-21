@@ -20,9 +20,9 @@ export default class QuoteCard extends Component {
     const { saying, stars, myStars } = this.state.quote;
 
     return (
-      <div class='vert-rule-card' >
-        <div class='hor-rule-card'>
-          <p class='quote'>{saying}</p>
+      <div className='card' >
+        <div className='hor-rule-card'>
+          <p className='quote'>{saying}</p>
           <p>Rating</p>
           <StarsCard stars={stars} />
           <p>My Rating</p>

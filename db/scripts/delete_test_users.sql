@@ -1,0 +1,1 @@
+DELETE FROM rs_users WHERE rs_u_id >= 4;

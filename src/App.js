@@ -8,6 +8,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      user: null,
       quotes: [],
       quoteType: 'medium',
       quoteCards: [],
@@ -15,12 +16,35 @@ class App extends Component {
     }
   }
   componentDidMount = () => {
-    // this.getQuotes();
+    this.checkVisitor()
   }
-  componentDidUpdate = () => {
-
+  componentDidUpdate = (prevProps, prevState) => {
+    const lastQuote = this.state.quotes.length - 1;
+    if (this.state.quotes[lastQuote] !== undefined) {
+      if (prevState.quotes[lastQuote]['stars'] !== this.state.quotes[lastQuote]['stars'] || prevState.quotes[lastQuote]['myStars'] !== this.state.quotes[lastQuote]['myStars']) {
+        this.loadCards();
+      }
+    }
   }
-
+  checkVisitor = () => {
+    axios.get("/api/visitor/check")
+      .then(res => {
+        console.log('res.data', res.data)
+        if (res.data === '') {
+          console.log('no user found');
+          this.registerVisitor()
+        }
+      })
+      .catch(err => console.log('error at checkVisitor', err))
+  }
+  registerVisitor = () => {
+    axios.post("/api/visitor/register", { A: 'ok' })
+      .then(res => {
+        console.log('res.data', res.data)
+        this.setState({ user: res.data })
+      })
+      .catch(err => console.log('error at registerVisitor', err))
+  }
   getQuotes = () => {
     console.log('App.js, getQuotes fn')
     const { quoteType } = this.state;
@@ -31,44 +55,52 @@ class App extends Component {
         newList.push({ id: null, type: quoteType, saying: res.data[0], stars: null, myStars: null })
         await this.setState({ quotes: newList });
         this.loadCards();
+        this.checkQuote()
       })
       .catch(err => console.log('error at getQuotes', err))
   }
   checkQuote = () => {
-    const { saying } = this.state.quotes;
-    // if (quotes.length !== 0) {
-    // for (let i = 0; i < quotes.length; i++) {
-    // if (quotes[quotes.length-1] === null)
+    const lastQuote = this.state.quotes.length - 1;
+    const quote = this.state.quotes[lastQuote];
+    console.log('starting checkQuote, quote:', quote)
     axios.get('/api/quote/check', {
-      saying: saying
-    }).then(response => {
-      // returns entire quote object, including stars
-      console.log('App.js, checkQuote complete, response:', response)
-    }).catch(error => {
-      console.log('App.js, checkQuote fail', error)
-    });
-    // }
-    // }
-  }
-  registerQuote = () => {
-    const { quotes } = this.state;
-    if (quotes.length !== 0) {
-      axios.post('/api/quote/register', {
-        quotes: quotes
-      }).then(response => {
-        console.log('App.js, registerQuote complete, response:', response)
+      params: { saying: quote.saying, type: quote.type }
+    })
+      .then(response => {
+        // returns entire quote object, including stars
+        if (response[0] === undefined) {
+          console.log('checkQuote found no matches')
+          this.registerQuote(quote)
+        } else {
+          console.log('checkQuote found a matches, updating state')
+          const newQuotes = this.state.quotes;
+          newQuotes[lastQuote] = response[0]
+          this.setState({ quotes: newQuotes })
+          console.log('App.js, checkQuote complete, response:', response[0])
+        }
       }).catch(error => {
-        console.log('App.js, registerQuote fail', error)
+        console.log('App.js, checkQuote fail', error)
       });
-    }
+  }
+  registerQuote = (q) => {
+    console.log('starting registerQuote')
+    axios.post('/api/quote/register', {
+      saying: q.saying, type: q.type
+    }).then(response => {
+      console.log('App.js, registerQuote complete, response:', response)
+    }).catch(error => {
+      console.log('App.js, registerQuote fail', error)
+    });
   }
   loadCards = () => {
     let quoteCards;
+    let counter = 0;
     if (this.state.quotes.length === 0) {
       quoteCards = [<p>Press the button to get quotes!</p>]
     } else {
       quoteCards = this.state.quotes.map(item => {
-        return <QuoteCard quote={item} />
+        counter += 1;
+        return <QuoteCard quote={item} key={counter} />
       })
     }
     this.setState({
@@ -99,15 +131,16 @@ class App extends Component {
   }
 
   render() {
-    const { quoteCards } = this.state;
-    console.log(quoteCards);
+    const { quotes, quoteCards } = this.state;
+    console.log('render console, quotes:', quotes);
     return (
-      <div className="vert-rule hor-rule mrgn-t15">
-        <section class='vert-rule-sect hor-rule-sect'>
+      <div className="vert-rule hor-rule mrgn-t5">
+
+        <section className='vert-rule-sect hor-rule-sect'>
           <h1>Ron Swanson Quotes</h1>
           <button onClick={this.getQuotes}>Get a Quote</button>
         </section>
-        <section class='vert-rule-sect hor-rule-sect flex-row flex-wrap'>
+        <section className='vert-rule-sect hor-rule-sect flex-row flex-wrap space-between'>
 
           {quoteCards}
 

@@ -1,0 +1,1 @@
+SELECT * FROM rs_quotes WHERE rs_q_saying = $1;

@@ -1,0 +1,1 @@
+SELECT * FROM rs_users WHERE rs_u_ip = $1;

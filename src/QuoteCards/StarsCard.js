@@ -11,19 +11,23 @@ export default function StarsCard(props) {
       rating = Math.round(rating);
     }
     let starsMapped = [];
+    let counter = 0;
     for (let i = 0; i < 5; i++) {
       if (rating === null) {
-        starsMapped.push(<img className="stars" alt='quote rating in stars' src={starNotRated} />);
+        counter += 1;
+        starsMapped.push(<img className="stars" alt='quote rating in stars' src={starNotRated} key={counter} />);
       } else if (i < rating) {
-        starsMapped.push(<img className="stars" alt='quote rating in stars' src={starFull} />);
+        counter += 1;
+        starsMapped.push(<img className="stars" alt='quote rating in stars' src={starFull} key={counter} />);
       } else {
-        starsMapped.push(<img className="stars" alt='quote rating in stars' src={starEmpty} />);
+        counter += 1;
+        starsMapped.push(<img className="stars" alt='quote rating in stars' src={starEmpty} key={counter} />);
       }
     }
     return starsMapped;
   };
   return (
-    <div class='flex-row'>
+    <div className='flex-row  card-contents'>
       {showStars(stars)}
     </div>
   )
