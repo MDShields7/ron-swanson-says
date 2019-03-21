@@ -1,15 +1,18 @@
 
 $clr-white: white;
-$clr-grey: grey;
+$clr-greyed: #dcdcdc;
 $clr-primary: rgb(54, 73, 54);
-$clr-secondary: rgb(16, 20, 40);
-$clr-btn:rgb(201, 201, 201);
-$clr-btn-hover:rgb(151, 206, 155);
+$clr-secondary: #101428;
+$clr-btn-off:rgb(177, 177, 177);
+$clr-btn:rgb(151, 206, 155);
 $full-hght: 100%;
 $full-wdth: 100%;
 $sect-hght: 50%;
+$sect-wdth: 100%;
 $sect-hght-min: 300px;
 $sect-wdth-mrgn: 10%;
+$card-hght: 300px;
+$card-wdth: 300px;
 
 .mrgn-t5 {
   margin-top: 5%;
@@ -24,14 +27,23 @@ $sect-wdth-mrgn: 10%;
   height: $full-hght;
 }
 .hor-rule {
-  height: $full-hght;
+  width: $full-hght;
 }
 .vert-rule-sect {
-  height: $sect-hght;
-  min-height: $sect-hght-min;
+  height: 200px;
+  // min-height: $sect-hght-min;
 }
 .hor-rule-sect {
-  height: $full-hght;
+  width: 100%;
+  margin: 10%;
+  min-width: 350px;
+}
+.vert-rule-card {
+  height: auto;
+  min-height: 300px;
+}
+.hor-rule-card {
+  width: 300px;
 }
 .flex-col {
   display: flex;
@@ -40,4 +52,17 @@ $sect-wdth-mrgn: 10%;
 .flex-row {
   display: flex;
   flex-direction: row;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.btn-off {
+  background: $clr-btn-off;
+}
+.btn {
+  background: $clr-btn;
+}
+.stars {
+  height: 30px;
 }

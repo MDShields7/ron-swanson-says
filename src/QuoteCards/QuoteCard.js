@@ -18,10 +18,11 @@ export default class QuoteCard extends Component {
   render() {
 
     const { saying, stars, myStars } = this.state.quote;
+
     return (
-      <div class='vert-card'>
-        <div class='hor-card'>
-          <p class='quote'>`${saying} - Ron Swanson`</p>
+      <div class='vert-rule-card' >
+        <div class='hor-rule-card'>
+          <p class='quote'>{saying}</p>
           <p>Rating</p>
           <StarsCard stars={stars} />
           <p>My Rating</p>
@@ -32,9 +33,9 @@ export default class QuoteCard extends Component {
   }
 }
     /* quote format = {
-  id: null (null, or Number),
-  type: 'medium' ('small', 'medium', 'large')
-  saying: 'string',
-  stars:null (0-5 = 0-5, 1 increments),
-  myStars:null (0-5 = 0-5, 1 increments)
+id: null (null, or Number),
+type: 'medium' ('small', 'medium', 'large')
+saying: 'string',
+stars:null (0-5 = 0-5, 1 increments),
+myStars:null (0-5 = 0-5, 1 increments)
 } */
