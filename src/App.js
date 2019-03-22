@@ -10,6 +10,7 @@ class App extends Component {
     this.state = {
       user: null,
       quotes: [],
+      quotesTemp: [],
       quoteType: 'medium',
       quoteCards: [],
       lengthButtons: [],
@@ -24,8 +25,7 @@ class App extends Component {
     const lastQuote = this.state.quotes.length - 1;
     if (this.state.quotes[lastQuote] !== undefined) {
       if (prevState.quotes[lastQuote]['stars'] !== this.state.quotes[lastQuote]['stars']
-        || prevState.quotes[lastQuote]['myStars'] !== this.state.quotes[lastQuote]['myStars']
-        || prevState.quotes[lastQuote]['id'] !== this.state.quotes[lastQuote]['id']) {
+        || prevState.quotes[lastQuote]['myStars'] !== this.state.quotes[lastQuote]['myStars']) {
         this.loadCards();
       }
     } else if (prevState.quoteType !== this.state.quoteType) {
@@ -64,7 +64,8 @@ class App extends Component {
           setTimeout(() => { this.setState({ warning: '' }) }, 2000)
           console.log('no quotes found!')
         } else {
-          newList.push({ id: null, type: quoteType, saying: res.data[0], stars: null, myStars: null })
+          let result = this.loopThruResults(res.data, quoteType)
+          newList.push({ id: null, type: quoteType, saying: result, stars: null, myStars: null })
           await this.setState({ quotes: newList });
         }
         await this.loadCards();
@@ -80,17 +81,20 @@ class App extends Component {
       axios.get('/api/quote/check', {
         params: { saying: quote.saying, type: quote.type }
       })
-        .then(response => {
+        .then(async response => {
           // returns entire quote object, including stars
-          if (response[0] === undefined) {
+          console.log('check quote response', response.data[0])
+          if (response.data[0] === undefined) {
             console.log('checkQuote found no matches')
             this.registerQuote(quote)
           } else {
-            console.log('checkQuote found a matches, updating state')
+            console.log('checkQuote found a match, updating state')
             const newQuotes = this.state.quotes;
-            newQuotes[lastQuote] = response[0]
-            this.setState({ quotes: newQuotes })
-            console.log('App.js, checkQuote complete, response:', response[0])
+            const { rs_q_id, rs_q_saying, rs_q_type } = response.data[0];
+            newQuotes[lastQuote] = { id: rs_q_id, type: rs_q_type, saying: rs_q_saying, stars: null, myStars: null }
+            await this.setState({ quotes: newQuotes })
+            this.loadCards();
+            console.log('App.js, checkQuote complete, response:', newQuotes[lastQuote])
           }
         }).catch(error => {
           console.log('App.js, checkQuote fail', error)
@@ -113,16 +117,28 @@ class App extends Component {
       console.log('App.js, registerQuote fail', error)
     });
   }
+
+  starSelect = (rating, index) => {
+    let newList = this.state.quotes;
+    console.log('STAR SELECT')
+    console.log(`changeRating, ${newList[index]['saying']}, newList[index]['myStars']`, newList[index]['myStars'])
+    newList[index]['myStars'] = rating;
+    console.log(`changeRating, ${newList[index]['saying']}, newList[index]['myStars']`, newList[index]['myStars'])
+    this.setState({ quotesTemp: newList })
+  }
+  starSubmit = () => {
+    this.setState({ quotes: this.state.quotesTemp, quotesTemp: [] })
+  }
   loadCards = () => {
     let quoteCards;
-    let counter = 0;
+    let counter = -1;
     if (this.state.quotes.length === 0) {
       quoteCards = [<p key='1'>Press the button to get quotes!</p>]
     } else {
       quoteCards = this.state.quotes.map(item => {
-        counter += 1;
         console.log('loadCards, item:', item)
-        return <QuoteCard quote={item} key={counter} />
+        counter += 1;
+        return <QuoteCard quote={item} value={counter} key={counter} starSelect={this.starSelect} starSubmit={this.starSubmit} />
       })
     }
     this.setState({
@@ -130,7 +146,6 @@ class App extends Component {
     })
   }
   handleSelect = async (e) => {
-    // let id = e.target.id
     let value = e.target.value
     await this.setState({
       quoteType: value
@@ -163,13 +178,18 @@ class App extends Component {
     if (newArr.length === 0) {
       return newArr
     } else {
+      console.log('newArr:', newArr, 'size:', type)
       newArr = newArr[Math.floor(Math.random() * newArr.length)];
+      console.log('newArr:', newArr, 'size:', type)
       return newArr;
     }
   }
   checkSize = (item, sizeType) => {
-    // console.log('item', item)
-    let size = item.length;
+    console.log('item', item)
+    let itemArr = item.split(' ')
+    console.log('itemArr', itemArr)
+    let size = itemArr.length;
+    console.log('size', size)
     if (sizeType === 'small') {
       if (5 > size) {
         return true;
@@ -187,10 +207,11 @@ class App extends Component {
 
 
   render() {
-    const { quotes, quoteCards, lengthButtons, quoteType, warning } = this.state;
+    const { quotes, quotesTemp, quoteCards, lengthButtons, quoteType, warning } = this.state;
     console.log('render console, warning:', warning);
     console.log('render console, quotes:', quotes);
-    // console.log('render console, quoteType:', quoteType);
+    console.log('render console, quotesTemp:', quotesTemp);
+    console.log('render console, quoteType:', quoteType);
     return (
       <div className="vert-rule hor-rule mrgn-t5">
 

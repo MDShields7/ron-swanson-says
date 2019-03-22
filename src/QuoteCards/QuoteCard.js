@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 // import './QuoteCard.scss';
-import StarsCard from './StarsCard'
+import StarCard from './StarCard'
 // import { id } from 'postcss-selector-parser';
 
 export default class QuoteCard extends Component {
@@ -9,6 +9,8 @@ export default class QuoteCard extends Component {
     super(props)
     this.state = {
       quote: props.quote,
+      index: props.value,
+      starSelect: props.starSelect,
     }
   }
   componentDidUpdate = (prevProps) => {
@@ -18,6 +20,8 @@ export default class QuoteCard extends Component {
   }
   render() {
 
+    const { index, starSelect } = this.state;
+    console.log('QuoteCard, index', index)
     const { id, saying, type, stars, myStars } = this.state.quote;
     console.log('id:', id, ', saying:', saying, ' type:', type, ' stars:', stars, ' myStars:', myStars)
     return (
@@ -26,9 +30,9 @@ export default class QuoteCard extends Component {
           <p className='quote'>{saying}</p>
           <p className='quote'>id #:{id}</p>
           <p>Rating</p>
-          <StarsCard stars={stars} rate={false} />
+          <StarCard rating={stars} rate={false} />
           <p>My Rating</p>
-          <StarsCard stars={myStars} rate={true} />
+          <StarCard rating={myStars} myRating={true} index={index} starSelect={starSelect} starSubmit={this.props.starSubmit} />
         </div>
       </div>
     )
