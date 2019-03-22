@@ -14,16 +14,23 @@ export default class QuoteCard extends Component {
     }
   }
   componentDidUpdate = (prevProps) => {
-    if (this.props.quote.id !== prevProps.quote.id) {
+    if (this.props.quote.id !== prevProps.quote.id
+      || this.props.quote.myStars !== prevProps.quote.myStars) {
+      console.log('QUOTECARD, SETSTATE')
       this.setState({ quote: this.props.quote })
     }
   }
   render() {
 
-    const { index, starSelect } = this.state;
+    let { index, starSelect } = this.state;
     console.log('QuoteCard, index', index)
-    const { id, saying, type, stars, myStars } = this.state.quote;
+    console.log('QUOTECARD, this.props', this.props)
+    console.log('QUOTECARD, this.state', this.state)
+    // let quote = this.state.quote;
+    let { id, saying, type, stars, myStars } = this.state.quote;
     console.log('id:', id, ', saying:', saying, ' type:', type, ' stars:', stars, ' myStars:', myStars)
+    console.log('myStars', myStars)
+    console.log('myStars === true', myStars === true)
     return (
       <div className='card' >
         <div className='hor-rule-card'>
@@ -32,7 +39,8 @@ export default class QuoteCard extends Component {
           <p>Rating</p>
           <StarCard rating={stars} rate={false} />
           <p>My Rating</p>
-          <StarCard rating={myStars} myRating={true} index={index} starSelect={starSelect} starSubmit={this.props.starSubmit} />
+          {/* {myStars ? 'rated' : 'not rated'} */}
+          {myStars ? (<StarCard rating={myStars} index={index} starSelect={starSelect} />) : (<StarCard rating={myStars} index={index} starSelect={starSelect} starSubmit={this.props.starSubmit} />)}
         </div>
       </div>
     )

@@ -13,19 +13,29 @@ export default class StarCard extends Component {
       index: props.index,
       starSelect: props.starSelect,
       starSubmit: props.starSubmit,
-      myRating: props.myRating,
+      rated: false,
     }
   }
-  handleSelect = (rated) => {
+  handleSelect = (rating) => {
     const { index } = this.state;
     console.log('index is', index)
-    console.log('rated is', rated)
-    this.state.starSelect(rated, index)
-    this.setState({ rating: rated })
+    console.log('rating is', rating)
+    this.state.starSelect(rating, index)
+    this.setState({ rating: rating })
+  }
+  handleSubmit = () => {
+    if (this.state.rating !== null) {
+      this.state.starSubmit()
+      this.setState({ rated: true })
+    }
   }
   render() {
-    const { rating, starSelect, starSubmit } = this.state;
+    const { rating, starSelect, rated } = this.state;
+    console.log('STAR CARD, starSelect === null', starSelect === null)
     console.log('rating', rating)
+    console.log('this.props.myStars', this.props.myStars)
+    const hasProp = this.props.hasOwnProperty('starSelect')
+    console.log('hasProp', hasProp)
     const showStars = rating => {
       if (rating != null) {
         rating = Math.round(rating);
@@ -33,13 +43,13 @@ export default class StarCard extends Component {
       let starsMapped = [];
       for (let i = 0; i < 5; i++) {
         if (rating === null) {
-          console.log('starcard not rated', rating, i)
+          // console.log('starcard not rated', rating, i)
           starsMapped.push(<div key={i} value={i + 1} onClick={starSelect ? (() => this.handleSelect(i + 1)) : ''} ><img className="stars" src={starNotRated} alt='rating' /></div>);
         } else if (i < rating) {
-          console.log('starcard full', rating)
+          // console.log('starcard full', rating)
           starsMapped.push(<div key={i} value={i + 1} onClick={starSelect ? (() => this.handleSelect(i + 1)) : ''} ><img className="stars" src={starFull} alt='rating' /></div>);
         } else {
-          console.log('starcard empty', rating)
+          // console.log('starcard empty', rating)
           starsMapped.push(<div key={i} value={i + 1} onClick={starSelect ? (() => this.handleSelect(i + 1)) : ''} ><img className="stars" src={starEmpty} alt='rating' /></div>);
         }
       }
@@ -49,7 +59,9 @@ export default class StarCard extends Component {
       <div>
         <div className='flex-row  card-contents'>
           {showStars(rating)}
-          {starSelect && rating ? <button onClick={starSubmit} >Submit Rating</button> : <div>NO BUTTON</div>}
+          {/* {!hasProp ? 'not mine to select' : rated ? 'mine to select & rated' : 'mine to select & not rated'} */}
+          {/* {hasProp && rated ? 'rating finished' : hasProp ? 'mine to select & rate' : 'no rating to give'} */}
+          {hasProp && rated ? <div></div> : hasProp ? <button onClick={this.handleSubmit} >Submit Rating</button> : <div></div>}
         </div>
       </div>
     )

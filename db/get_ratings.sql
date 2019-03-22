@@ -1,0 +1,1 @@
+SELECT * FROM rs_rating WHERE rs_r_q_id = $1;
