@@ -1,0 +1,1 @@
+SELECT * FROM rs_rating WHERE rs_r_q_id = $1 AND rs_r_u_id = $2;

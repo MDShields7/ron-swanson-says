@@ -65,7 +65,19 @@ app.post("/api/visitor/register", (req, res) => {
       res.status(500).json({ message: 'register visitor error:', error })
     })
 })
-
+app.get("/api/quote/getById", (req, res) => {
+  const dbInstance = req.app.get('db');
+  const { id } = req.query;
+  console.log('CHECK QUOTE starting, id:', id)
+  dbInstance.get_quote_by_id([id])
+    .then(response => {
+      console.log('CHECK QUOTE response', response)
+      res.json(response);
+    })
+    .catch(error => {
+      res.status(500).json({ message: 'check quote error:', error })
+    })
+});
 app.get("/api/quote/check", (req, res) => {
   const dbInstance = req.app.get('db');
   const { saying, type } = req.query;
@@ -95,14 +107,40 @@ app.post("/api/quote/register", (req, res) => {
 app.get("/api/ratings/get", (req, res) => {
   const dbInstance = req.app.get('db');
   const { id } = req.query;
-  console.log('CHECK RATINGS starting, quote id:', id)
+  console.log('GET RATINGS starting, quote id:', id)
   dbInstance.get_ratings([id])
     .then(ratings => {
-      console.log('CHECK RATINGS ratings', ratings)
+      console.log('GET RATINGS ratings', ratings)
       res.json(ratings);
     })
     .catch(error => {
       res.status(500).json({ message: 'check quote error:', error })
+    })
+});
+app.get("/api/myRating/get", (req, res) => {
+  const dbInstance = req.app.get('db');
+  const { quoteId, userId } = req.query;
+  console.log('GET MY RATING starting, quoteId:', quoteId, 'userId', userId)
+  dbInstance.get_my_rating([quoteId, userId])
+    .then(rating => {
+      console.log('GET MY RATING ratings', rating)
+      res.json(rating);
+    })
+    .catch(error => {
+      res.status(500).json({ message: 'check quote error:', error })
+    })
+});
+app.post('/api/rating/post', (req, res) => {
+  const dbInstance = req.app.get('db');
+  const { quoteId, userId, rating } = req.body;
+  console.log('REGISTER RATINGS starting, quoteId:', quoteId, 'userId', userId, 'rating', rating)
+  dbInstance.register_rating([userId, quoteId, rating])
+    .then(rating => {
+      console.log('REGISTER RATING ratings', rating)
+      res.json(rating);
+    })
+    .catch(error => {
+      res.status(500).json({ message: 'register rating error:', error })
     })
 });
 

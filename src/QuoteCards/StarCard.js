@@ -10,11 +10,11 @@ export default class StarCard extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      id: props.id,
+      index: props.index,
       rating: props.rating.stars,
       starType: props.rating.starType,
-      index: props.index,
       starSelect: props.starSelect,
-      starSubmit: props.starSubmit,
       localRating: null,
     }
   }
@@ -28,8 +28,8 @@ export default class StarCard extends Component {
   componentDidUpdate = () => {
   }
   handleSelect = () => {
-    const { index, localRating } = this.state;
-    this.state.starSelect(localRating, index)
+    const { id, index, localRating } = this.state;
+    this.state.starSelect(localRating, id, index)
   }
   handleSelectLocal = (localRating) => {
     this.setState({ localRating: localRating })
@@ -41,9 +41,9 @@ export default class StarCard extends Component {
       usedRating = localRating;
     }
     console.log('StarCard, this.state', this.state)
-    console.log('StarCard, this.props', this.props)
+    // console.log('StarCard, this.props', this.props)
     const hasProp = this.props.hasOwnProperty('starSelect')
-    console.log('hasProp', hasProp)
+    // console.log('hasProp', hasProp)
 
     const showStars = () => {
       let starsMapped = [];

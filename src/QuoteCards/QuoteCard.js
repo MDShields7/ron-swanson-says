@@ -23,7 +23,7 @@ export default class QuoteCard extends Component {
     let { index, starSelect } = this.state;
     // console.log('QuoteCard, index', index)
     // console.log('QUOTECARD, this.props', this.props)
-    // console.log('QUOTECARD, this.state', this.state)
+    console.log('QUOTECARD, this.state', this.state)
     // let quote = this.state.quote;
     let { id, saying, type, stars, myStars } = this.state.quote;
     // console.log('id:', id, ', saying:', saying, ' type:', type, ' stars:', stars, ' myStars:', myStars)
@@ -38,8 +38,8 @@ export default class QuoteCard extends Component {
           <StarCard rating={{ starType: 'overall', stars: stars }} rate={false} />
           <p>My Rating</p>
           {myStars === null ?
-            <StarCard rating={{ starType: 'mine', stars: myStars }} index={index} starSelect={starSelect} />
-            : <StarCard rating={{ starType: 'mine', stars: myStars }} index={index} />}
+            <StarCard rating={{ starType: 'mine', stars: myStars }} id={id} index={index} starSelect={starSelect} />
+            : <StarCard rating={{ starType: 'mine', stars: myStars }} id={id} index={index} />}
         </div>
       </div>
     )
