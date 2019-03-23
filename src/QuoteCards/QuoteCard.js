@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 
-// import './QuoteCard.scss';
 import StarCard from './StarCard'
-// import { id } from 'postcss-selector-parser';
 
 export default class QuoteCard extends Component {
   constructor(props) {
@@ -16,31 +14,32 @@ export default class QuoteCard extends Component {
   componentDidUpdate = (prevProps) => {
     if (this.props.quote.id !== prevProps.quote.id
       || this.props.quote.myStars !== prevProps.quote.myStars) {
-      console.log('QUOTECARD, SETSTATE')
+      // console.log('QUOTECARD, SETSTATE')
       this.setState({ quote: this.props.quote })
     }
   }
   render() {
 
     let { index, starSelect } = this.state;
-    console.log('QuoteCard, index', index)
-    console.log('QUOTECARD, this.props', this.props)
-    console.log('QUOTECARD, this.state', this.state)
+    // console.log('QuoteCard, index', index)
+    // console.log('QUOTECARD, this.props', this.props)
+    // console.log('QUOTECARD, this.state', this.state)
     // let quote = this.state.quote;
     let { id, saying, type, stars, myStars } = this.state.quote;
-    console.log('id:', id, ', saying:', saying, ' type:', type, ' stars:', stars, ' myStars:', myStars)
-    console.log('myStars', myStars)
-    console.log('myStars === true', myStars === true)
+    // console.log('id:', id, ', saying:', saying, ' type:', type, ' stars:', stars, ' myStars:', myStars)
+    // console.log('myStars', myStars)
+    // console.log('myStars === true', myStars === true)
     return (
       <div className='card' >
         <div className='hor-rule-card'>
           <p className='quote'>{saying}</p>
           <p className='quote'>id #:{id}</p>
           <p>Rating</p>
-          <StarCard rating={stars} rate={false} />
+          <StarCard rating={{ starType: 'overall', stars: stars }} rate={false} />
           <p>My Rating</p>
-          {/* {myStars ? 'rated' : 'not rated'} */}
-          {myStars ? (<StarCard rating={myStars} index={index} starSelect={starSelect} />) : (<StarCard rating={myStars} index={index} starSelect={starSelect} starSubmit={this.props.starSubmit} />)}
+          {myStars === null ?
+            <StarCard rating={{ starType: 'mine', stars: myStars }} index={index} starSelect={starSelect} />
+            : <StarCard rating={{ starType: 'mine', stars: myStars }} index={index} />}
         </div>
       </div>
     )

@@ -22,16 +22,11 @@ class App extends Component {
   componentDidMount = () => {
     this.checkVisitor()
     this.loadTypeBtns()
-
   }
   componentDidUpdate = (prevProps, prevState) => {
     const lastQuote = this.state.quotes.length - 1;
-    console.log('CDUPDATE, this.state.quotes[lastQuote]', this.state.quotes[lastQuote])
-    console.log('CDUPDATE, prevState.quotes[lastQuote]', prevState.quotes || prevState.quotes[lastQuote])
     if (this.state.quotes[lastQuote] !== undefined) {
       if (prevState.quotes[lastQuote] !== this.state.quotes[lastQuote]) {
-        this.loadCards();
-      } else if (prevState.quotes[lastQuote]['stars'] !== this.state.quotes[lastQuote]['stars']) {
         this.loadCards();
       }
     } else if (prevState.quoteType !== this.state.quoteType) {
@@ -41,9 +36,9 @@ class App extends Component {
   checkVisitor = () => {
     axios.get("/api/visitor/check")
       .then(res => {
-        console.log('res.data', res.data)
+        console.log('checkVisitor, res.data', res.data)
+        this.setState({ user: res.data })
         if (res.data === '') {
-          console.log('no user found');
           this.registerVisitor()
         }
       })
@@ -52,130 +47,177 @@ class App extends Component {
   registerVisitor = () => {
     axios.post("/api/visitor/register", { A: 'ok' })
       .then(res => {
-        console.log('res.data', res.data)
         this.setState({ user: res.data })
       })
       .catch(err => console.log('error at registerVisitor', err))
   }
-  getQuotes = () => {
-    console.log('App.js, getQuotes fn')
-    const { quoteType } = this.state;
-    // var deep = _.cloneDeep(objects);?\
-    let newList = _.cloneDeep(this.state.quotes);
-    console.log('GET QUOTES, newList', newList)
-    axios.get('https://ron-swanson-quotes.herokuapp.com/v2/quotes/58')
-      .then(async res => {
-        // console.log('res.data', res.data)
-        console.log('this.loopThruResults(res.data, quoteType).length === 0', this.loopThruResults(res.data, quoteType).length === 0)
-        if (this.loopThruResults(res.data, quoteType).length === 0) {
-          await this.setState({ warning: `No quotes of ${quoteType} size found!` })
-          setTimeout(() => { this.setState({ warning: '' }) }, 2000)
-          console.log('no quotes found!')
-        } else {
-          let result = this.loopThruResults(res.data, quoteType)
-          newList.push({ id: null, type: quoteType, saying: result, stars: null, myStars: null })
-          console.log('GET QUOTES, newList', newList)
-          await this.setState({ quotes: newList });
-        }
-        await this.loadCards();
-        this.checkQuote()
-      })
-      .catch(err => console.log('error at getQuotes', err))
-  }
-  checkQuote = () => {
-    if (this.state.quotes.length !== 0) {
-      const lastQuote = this.state.quotes.length - 1;
-      const quote = this.state.quotes[lastQuote];
-      console.log('starting checkQuote, quote:', quote)
-      axios.get('/api/quote/check', {
-        params: { saying: quote.saying, type: quote.type }
-      })
-        .then(async response => {
-          // returns entire quote object, including stars
-          console.log('check quote response', response.data[0])
-          if (response.data[0] === undefined) {
-            console.log('checkQuote found no matches')
-            this.registerQuote(quote)
-          } else {
-            console.log('checkQuote found a match, updating state')
-            const newQuotes = _.cloneDeep(this.state.quotes);
-            const { rs_q_id, rs_q_saying, rs_q_type } = response.data[0];
-            newQuotes[lastQuote] = { id: rs_q_id, type: rs_q_type, saying: rs_q_saying, stars: null, myStars: null }
-            await this.setState({ quotes: newQuotes })
-            this.loadCards();
-            console.log('App.js, checkQuote complete, response:', newQuotes[lastQuote])
-          }
-        }).catch(error => {
-          console.log('App.js, checkQuote fail', error)
-        });
-    }
-  }
-  registerQuote = (q) => {
-    console.log('starting registerQuote')
+  getAllQuoteInfo = async () => {
+    const { quoteType, user } = this.state;
     const lastQuote = this.state.quotes.length - 1;
-    axios.post('/api/quote/register', {
-      saying: q.saying, type: q.type
-    }).then(async response => {
-      console.log('App.js, registerQuote complete, response:', response.data[0])
-      const { rs_q_id, rs_q_saying, rs_q_type } = response.data[0]
-      const newQuotes = _.cloneDeep(this.state.quotes);
-      newQuotes[lastQuote] = { id: rs_q_id, saying: rs_q_saying, type: rs_q_type, stars: null, myStars: null }
-      await this.setState({ quotes: newQuotes })
-      this.loadCards();
-    }).catch(error => {
-      console.log('App.js, registerQuote fail', error)
-    });
-  }
-  getRatings = () => {
-    let ratings;
-    if (this.state.quotes.length !== 0) {
-      const lastQuote = this.state.quotes.length - 1;
-      const quote = this.state.quotes[lastQuote];
-      console.log('starting getRatings, quote.id:', quote.id)
-      axios.get("/api/ratings/get", { params: { id: 1 } })
-        .then(res => {
-          console.log('res.data', res.data)
-          ratings = this.averageRatings(res.data)
-          console.log('ratings', ratings)
-          let newQuotes = _.cloneDeep(this.state.quotes);
-          newQuotes[lastQuote]['stars'] = ratings;
-          this.setState({ quotes: newQuotes })
-        })
-        .catch(err => console.log('error at checkVisitor', err))
+    // REQUEST QUOTES
+    const quotesReq = await axios.get('https://ron-swanson-quotes.herokuapp.com/v2/quotes/58')
+    let loopResult = this.loopThruResults(quotesReq.data, quoteType)
+    // CHECK IF QUOTE IS ON FILE, GET ID ( OR REGISTER, GET ID )
+    let checkReq = await axios.get('/api/quote/check', {
+      params: { saying: loopResult, type: quoteType }
+    })
+    if (checkReq.data[0] === undefined) {
+      checkReq = await axios.post('/api/quote/register', {
+        saying: loopResult, type: quoteType
+      })
     }
+    // REQUEST QUOTE RATINGS
+    let ratingsReq = await axios.get("/api/ratings/get", { params: { id: checkReq.data[0].rs_q_id } })
+    if (ratingsReq.data[0] === undefined) {
+      ratingsReq.data[0] = null
+    }
+    // REQUEST QUOTE RATINGS BY THIS USER
+    const myRatingsReq = await axios.get("/api/ratings/get", { params: { id: checkReq.data[0].rs_q_id, userId: user.id } })
+    if (myRatingsReq.data[0] === undefined) {
+      myRatingsReq.data[0] = null
+    }
+    const newQuotes = _.cloneDeep(this.state.quotes);
+    let newQuote = _.cloneDeep(newQuotes[lastQuote])
+    newQuote = {
+      id: checkReq.data[0].rs_q_id,
+      type: quoteType,
+      saying: loopResult,
+      stars: ratingsReq.data[0],
+      myStars: myRatingsReq.data[0],
+    }
+    newQuotes.push(newQuote)
+    console.log('newQuote', newQuote)
+    this.setState({
+      quotes: newQuotes
+    })
+
   }
+  // getQuotes = () => {
+  //   console.log('App.js, getQuotes fn')
+  //   let result;
+  //   const { quoteType } = this.state;
+  //   let newList = _.cloneDeep(this.state.quotes);
+  //   axios.get('https://ron-swanson-quotes.herokuapp.com/v2/quotes/58')
+  //     .then(res => {
+  //       console.log('res', res)
+  //       let loopResult = this.loopThruResults(res.data, quoteType)
+  //       result = { type: quoteType, saying: loopResult }
+  //       console.log('getQuotes, result', result)
+  //       newList.push({ id: null, type: quoteType, saying: loopResult, stars: null, myStars: null })
+  //       console.log('GET QUOTES, newList', result)
+  //       // await this.setState({ quotes: newList });
+
+  //     })
+  //     // .then(() => {
+  //     //   this.loadCards();
+  //     // })
+  //     .catch(err => console.log('error at getQuotes', err))
+  //   console.log('getQuotes, result', result)
+  //   return result;
+  // }
+  // checkQuote = () => {
+  //   if (this.state.quotes.length !== 0) {
+  //     const lastQuote = this.state.quotes.length - 1;
+  //     const quote = this.state.quotes[lastQuote];
+  //     console.log('App.js checkQuote start, quote:', quote)
+  //     axios.get('/api/quote/check', {
+  //       params: { saying: quote.saying, type: quote.type }
+  //     })
+  //       .then(async response => {
+  //         // returns entire quote object, including stars
+  //         console.log('App.js checkQuote, response', response.data[0])
+  //         if (response.data[0] === undefined) {
+  //           console.log('checkQuote found no matches')
+  //           return this.registerQuote(quote)
+  //         } else {
+  //           console.log('checkQuote found a match, updating state')
+  //           const newQuotes = _.cloneDeep(this.state.quotes);
+  //           const { rs_q_id, rs_q_saying, rs_q_type } = response.data[0];
+  //           newQuotes[lastQuote] = { id: rs_q_id, type: rs_q_type, saying: rs_q_saying, stars: null, myStars: null }
+  //           // await this.setState({ quotes: newQuotes })
+  //           // this.loadCards();
+  //           console.log('App.js, checkQuote complete, response:', newQuotes[lastQuote])
+  //           let result = { id: rs_q_id }
+  //           console.log('CHECK QUOTE, result', result)
+  //           return result
+  //         }
+  //       }).catch(error => {
+  //         console.log('App.js, checkQuote fail', error)
+  //       });
+  //   }
+  // }
+  // registerQuote = (q) => {
+  //   console.log('starting registerQuote')
+  //   const lastQuote = this.state.quotes.length - 1;
+  //   axios.post('/api/quote/register', {
+  //     saying: q.saying, type: q.type
+  //   }).then(async response => {
+  //     console.log('App.js, registerQuote complete, response:', response.data[0])
+  //     const { rs_q_id, rs_q_saying, rs_q_type } = response.data[0]
+  //     const newQuotes = _.cloneDeep(this.state.quotes);
+  //     newQuotes[lastQuote] = { id: rs_q_id, saying: rs_q_saying, type: rs_q_type, stars: null, myStars: null }
+  //     // await this.setState({ quotes: newQuotes })
+  //     // this.loadCards();
+  //     let result = { id: rs_q_id }
+  //     return result;
+  //   }).catch(error => {
+  //     console.log('App.js, registerQuote fail', error)
+  //   });
+  // }
+  // getMyRatings = () => {
+  //   if (this.state.quotes.length !== 0) {
+  //     const lastQuote = this.state.quotes.length - 1;
+  //     const quote = this.state.quotes[lastQuote];
+  //     console.log('App.js getMyRatings start, quote.id:', quote.id)
+  //     axios.get("/api/ratings/get", { params: { id: quote.id } })
+  //       .then(async res => {
+  //         console.log('App.js getMyRatings, res.data', res.data)
+  //         let newQuotes = _.cloneDeep(this.state.quotes);
+  //         let result = { myStars: res.data[0] }
+  //         if (res.data.length === 0) {
+  //           result = { myStars: 'not rated' }
+  //         }
+  //         newQuotes[lastQuote]['myStars'] = res.data[0];
+  //         // await this.setState({ quotes: newQuotes })
+  //         // this.loadCards()
+  //         return result
+  //       })
+  //       .catch(err => console.log('error at checkVisitor', err))
+  //   }
+  // }
+  // getRatings = () => {
+  //   let ratings;
+  //   if (this.state.quotes.length !== 0) {
+  //     const lastQuote = this.state.quotes.length - 1;
+  //     const quote = this.state.quotes[lastQuote];
+  //     console.log('App,js getRatings start, quote.id:', quote)
+  //     axios.get("/api/ratings/get", { params: { id: quote.id } })
+  //       .then(async res => {
+  //         console.log('App,js getRatings, res.data', res.data)
+  //         let result = this.averageRatings(res.data)
+  //         console.log('ratings', ratings)
+  //         let newQuotes = _.cloneDeep(this.state.quotes);
+  //         newQuotes[lastQuote]['stars'] = ratings;
+  //         // await this.setState({ quotes: newQuotes })
+  //         // this.loadCards()
+  //         return result;
+  //       })
+  //       .catch(err => console.log('error at checkVisitor', err))
+  //   }
+  // }
   averageRatings = (arr) => {
     let count = 0;
     let ratingAvg = 0;
     for (let i = 0; i < arr.length; i++) {
+      if (arr.length === 0) {
+        return null;
+      }
       console.log('arr[i].rs_rating', arr[i].rs_rating)
       ratingAvg += arr[i].rs_rating;
       count++
     }
     ratingAvg = Math.round(ratingAvg /= count)
     return ratingAvg
-  }
-  starSelect = (rating, index) => {
-    // console.log('STAR SELECT BEFORE, this.state.quotes[index]["myStars"]', this.state.quotes[index]["myStars"])
-    let newList = _.cloneDeep(this.state.quotes);
-    // let newList2 = this.state.quotes;
-    // console.log('newList === this.state.quotes', newList === this.state.quotes)
-    // console.log('newList[index] === this.state.quotes[index]', newList[index] === this.state.quotes[index])
-    // console.log('newList[index]["myStars"] === this.state.quotes[index]', newList[index]["myStars"] === this.state.quotes[index]["myStars"])
-    newList[index]['myStars'] = rating;
-    // console.log('STAR SELECT, this.state.quotes[index]["myStars"]', this.state.quotes[index]["myStars"])
-    // console.log('STAR SELECT, newList[index]["myStars"]', newList[index]["myStars"])
-    // console.log('newList[index] === this.state.quotes[index]', newList[index] === this.state.quotes[index])
-    // console.log('newList[index]["myStars"] === this.state.quotes[index]', newList[index]["myStars"] === this.state.quotes[index]["myStars"])
-    let newIndexList = _.cloneDeep(this.state.indexList);
-    newIndexList.push(index);
-    console.log('indexList', newIndexList);
-    this.setState({ quotesTemp: newList, indexList: newIndexList })
-    // this.setState({ indexList: newIndexList })
-  }
-  starSubmit = () => {
-    console.log('App.js, submit stars rating')
-    this.setState({ quotes: this.state.quotesTemp, quotesTemp: [] })
   }
   loadCards = () => {
     let quoteCards;
@@ -193,12 +235,6 @@ class App extends Component {
       quoteCards: quoteCards
     })
   }
-  handleSelect = async (e) => {
-    let value = e.target.value
-    await this.setState({
-      quoteType: value
-    })
-  }
   loadTypeBtns = () => {
     const { quoteType } = this.state;
     if (quoteType === null) {
@@ -214,7 +250,22 @@ class App extends Component {
     })
     this.setState({ lengthButtons: lengthButtons })
   }
-
+  starSelect = async (rating, index) => {
+    let newList = _.cloneDeep(this.state.quotes);
+    newList[index]['myStars'] = rating;
+    let newIndexList = _.cloneDeep(this.state.indexList);
+    newIndexList.push(index);
+    console.log('indexList', newIndexList);
+    await this.setState({ quotesTemp: newList, indexList: newIndexList })
+    console.log('App.js, submit stars rating')
+    this.setState({ quotes: this.state.quotesTemp, quotesTemp: [] })
+  }
+  handleSelect = async (e) => {
+    let value = e.target.value
+    await this.setState({
+      quoteType: value
+    })
+  }
   loopThruResults = (arr, type) => {
     let newArr = []
     for (let i = 0; i < arr.length; i++) {
@@ -252,27 +303,20 @@ class App extends Component {
     }
   }
 
-
   render() {
-    const { quotes, quotesTemp, quoteCards, lengthButtons, quoteType, warning } = this.state;
-    // console.log('render console, warning:', warning);
-    console.log('render console, quotes:', quotes);
-    console.log('render console, quotesTemp:', quotesTemp);
-    console.log('render console, quoteType:', quoteType);
+    const { quoteCards, lengthButtons, warning } = this.state;
+    console.log('App.js render console, this.state:', this.state);
     return (
       <div className="vert-rule hor-rule mrgn-t5">
-
         <section className='vert-rule-sect hor-rule-sect'>
           <button onClick={this.getRatings} >Get Ratings for ID #1</button>
           <h1>Ron Swanson Quotes</h1>
-          <button onClick={this.getQuotes}>Get a Quote</button>
+          <button onClick={this.getAllQuoteInfo}>Get a Quote</button>
           <div>{lengthButtons}</div>
           <p className='warning'>{warning}</p>
         </section>
         <section className='vert-rule-sect hor-rule-sect flex-row flex-wrap space-between'>
-
           {quoteCards}
-
         </section>
       </div >
     );

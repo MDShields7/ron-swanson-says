@@ -97,9 +97,8 @@ app.get("/api/ratings/get", (req, res) => {
   const { id } = req.query;
   console.log('CHECK RATINGS starting, quote id:', id)
   dbInstance.get_ratings([id])
-    // dbInstance.get_ratings([id])
     .then(ratings => {
-      console.log('CHECK QUOTE ratings', ratings)
+      console.log('CHECK RATINGS ratings', ratings)
       res.json(ratings);
     })
     .catch(error => {

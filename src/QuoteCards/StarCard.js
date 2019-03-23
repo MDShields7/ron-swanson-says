@@ -1,5 +1,6 @@
 /* eslint-disable no-loop-func */
 import React, { Component } from 'react'
+import _ from 'lodash';
 
 import starFull from "../Images/moment-star-full.svg";
 import starEmpty from "../Images/moment-star-empty.svg";
@@ -9,61 +10,72 @@ export default class StarCard extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      rating: props.rating,
+      rating: props.rating.stars,
+      starType: props.rating.starType,
       index: props.index,
       starSelect: props.starSelect,
       starSubmit: props.starSubmit,
-      rated: false,
+      localRating: null,
     }
   }
-  handleSelect = (rating) => {
-    const { index } = this.state;
-    console.log('index is', index)
-    console.log('rating is', rating)
-    this.state.starSelect(rating, index)
-    this.setState({ rating: rating })
-  }
-  handleSubmit = () => {
-    if (this.state.rating !== null) {
-      this.state.starSubmit()
-      this.setState({ rated: true })
+  componentDidMount = () => {
+    let newRating = _.cloneDeep(this.state.rating)
+    if (this.state.starType === 'overall' && newRating !== null) {
+      newRating = Math.round(newRating);
+      this.setState({ rating: newRating })
     }
+  }
+  componentDidUpdate = () => {
+  }
+  handleSelect = () => {
+    const { index, localRating } = this.state;
+    this.state.starSelect(localRating, index)
+  }
+  handleSelectLocal = (localRating) => {
+    this.setState({ localRating: localRating })
   }
   render() {
-    const { rating, starSelect, rated } = this.state;
-    console.log('STAR CARD, starSelect === null', starSelect === null)
-    console.log('rating', rating)
-    console.log('this.props.myStars', this.props.myStars)
+    const { rating, starType, localRating } = this.state;
+    let usedRating = rating;
+    if (localRating !== null) {
+      usedRating = localRating;
+    }
+    console.log('StarCard, this.state', this.state)
+    console.log('StarCard, this.props', this.props)
     const hasProp = this.props.hasOwnProperty('starSelect')
     console.log('hasProp', hasProp)
-    const showStars = rating => {
-      if (rating != null) {
-        rating = Math.round(rating);
-      }
+
+    const showStars = () => {
       let starsMapped = [];
       for (let i = 0; i < 5; i++) {
-        if (rating === null) {
-          // console.log('starcard not rated', rating, i)
-          starsMapped.push(<div key={i} value={i + 1} onClick={starSelect ? (() => this.handleSelect(i + 1)) : ''} ><img className="stars" src={starNotRated} alt='rating' /></div>);
-        } else if (i < rating) {
-          // console.log('starcard full', rating)
-          starsMapped.push(<div key={i} value={i + 1} onClick={starSelect ? (() => this.handleSelect(i + 1)) : ''} ><img className="stars" src={starFull} alt='rating' /></div>);
+        const starTemplate = (svg) => {
+          if (starType === 'overall') {
+            return (<div key={i} value={i + 1} ><img className="stars" src={svg} alt={''} /></div>)
+          } else if (starType === 'mine') {
+            if (hasProp) {
+              return (<div key={i} value={i + 1} onClick={() => this.handleSelectLocal(i + 1)} ><img className="stars" src={svg} alt={''} /></div>)
+            } else {
+              return (<div key={i} value={i + 1} ><img className="stars" src={svg} alt={''} /></div>)
+            }
+          }
+        }
+        if (usedRating === null) {
+          starsMapped.push(starTemplate(starNotRated));
+        } else if (i < usedRating) {
+          starsMapped.push(starTemplate(starFull));
         } else {
-          // console.log('starcard empty', rating)
-          starsMapped.push(<div key={i} value={i + 1} onClick={starSelect ? (() => this.handleSelect(i + 1)) : ''} ><img className="stars" src={starEmpty} alt='rating' /></div>);
+          starsMapped.push(starTemplate(starEmpty));
         }
       }
       return starsMapped;
-    };
+    }
     return (
       <div>
         <div className='flex-row  card-contents'>
-          {showStars(rating)}
-          {/* {!hasProp ? 'not mine to select' : rated ? 'mine to select & rated' : 'mine to select & not rated'} */}
-          {/* {hasProp && rated ? 'rating finished' : hasProp ? 'mine to select & rate' : 'no rating to give'} */}
-          {hasProp && rated ? <div></div> : hasProp ? <button onClick={this.handleSubmit} >Submit Rating</button> : <div></div>}
+          {showStars()}
+          {(starType === 'mine') && hasProp && (rating !== localRating) ? <button onClick={this.handleSelect} >Submit Rating</button> : hasProp ? <div value='cant submit yet'>Select your rating</div> : starType === 'overall' ? <div value='NA'></div> : <></>}
         </div>
-      </div>
+      </div >
     )
   }
 }
