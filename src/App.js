@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 import './App.scss';
 import QuoteCard from './QuoteCards/QuoteCard'
+// import Ron from './Images/ron-swanson.jpg'
 
 class App extends Component {
   constructor(props) {
@@ -132,12 +133,14 @@ class App extends Component {
     return ratingAvg
   }
   loadCards = () => {
+    let { quotes } = this.state;
+    // quotes = quotes.reverse()
     let quoteCards;
     let counter = -1;
     if (this.state.quotes.length === 0) {
       quoteCards = [<p key='1'>Press the button to get quotes!</p>]
     } else {
-      quoteCards = this.state.quotes.map(item => {
+      quoteCards = quotes.map(item => {
         console.log('loadCards, item:', item)
         counter += 1;
         return <QuoteCard quote={item} value={counter} key={counter} starSelect={this.starSelect} starSubmit={this.starSubmit} />
@@ -216,19 +219,22 @@ class App extends Component {
     const { quoteCards, lengthButtons, warning } = this.state;
     console.log('App.js render console, this.state:', this.state);
     return (
-      <div className="vert-rule hor-rule mrgn-t5">
+      <>
+        <div className='main'>
+          <div className='bg-img'>
+          </div>
+          <div className='title-section'>
+            <h1 >Ron Swanson Says</h1>
+            <div>{lengthButtons}</div>
+            <button className='big-button' onClick={() => this.getAllQuoteInfo(false)}>Get a Quote</button>
+            {/* <p className='warning'>{warning}</p> */}
+          </div>
 
-        <section className='vert-rule-sect hor-rule-sect'>
-          <button onClick={this.getRatings} >Get Ratings for ID #1</button>
-          <h1>Ron Swanson Quotes</h1>
-          <button onClick={() => this.getAllQuoteInfo(false)}>Get a Quote</button>
-          <div>{lengthButtons}</div>
-          <p className='warning'>{warning}</p>
-        </section>
-        <section className='vert-rule-sect hor-rule-sect flex-row flex-wrap space-between'>
-          {quoteCards}
-        </section>
-      </div >
+          <div className='card-container'>
+            {quoteCards}
+          </div>
+        </div>
+      </>
     );
   }
 }

@@ -79,11 +79,11 @@ export default class StarCard extends Component {
       return starsMapped;
     }
     return (
-      <div>
-        <div className='flex-row  card-contents'>
+      <div className='center'>
+        <div className='card-contents'>
           {showStars()}
-          {(starType === 'mine') && hasProp && (rating !== localRating) ? <button onClick={this.handleSelect} >Submit Rating</button> : hasProp ? <div value='cant submit yet'>Select your rating</div> : starType === 'overall' ? <div value='NA'></div> : <></>}
         </div>
+        {(starType === 'mine') && hasProp && (rating !== localRating) ? <button className='lil-button' onClick={this.handleSelect} >Submit Rating</button> : hasProp ? <div value='cant submit yet'>Select your rating</div> : starType === 'overall' ? <div value='NA'></div> : <></>}
       </div >
     )
   }

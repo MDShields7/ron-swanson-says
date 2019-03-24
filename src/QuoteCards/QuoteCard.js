@@ -25,15 +25,16 @@ export default class QuoteCard extends Component {
     console.log(`QUOTECARD index ${index}, this.props`, this.props)
     console.log(`QUOTECARD index ${index}, this.state`, this.state)
     let { index, starSelect } = this.state;
-    let { id, saying } = this.state.quote;
+    let { id, saying, type } = this.state.quote;
     return (
       <div className='card' >
         <div className='hor-rule-card'>
-          <p className='quote'>{saying}</p>
+          <p className='quote'>"{saying}"</p>
           {/* <p className='quote'>id #:{id}</p> */}
-          <p>Overall Rating</p>
+          <p>Quote size: {type}</p>
+          <p>Overall Rating {this.state.quote.stars === null ? '(Not Rated)' : ''}</p>
           <StarCard rating={{ starType: 'overall', stars: this.state.quote.stars }} rate={false} />
-          <p>My Rating</p>
+          <p>My Rating {this.state.quote.myStars === null ? '(Not Rated)' : ''}</p>
           {this.state.quote.myStars === null ?
             <StarCard rating={{ starType: 'mine', stars: this.state.quote.myStars }} id={id} index={index} starSelect={starSelect} />
             : <StarCard rating={{ starType: 'mine', stars: this.state.quote.myStars }} id={id} index={index} />}

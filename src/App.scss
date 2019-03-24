@@ -1,11 +1,14 @@
 
 $clr-white: white;
-$clr-grey: #c1c1c1;
+$clr-grey: #c1c1c17e;
 $clr-greyed: #dcdcdc;
+$clr-ltblue: #2c3347;
 $clr-primary: rgb(54, 73, 54);
 $clr-secondary: #101428;
 $clr-btn-off:rgb(177, 177, 177);
-$clr-btn:rgb(151, 206, 155);
+$clr-btn:rgba(255, 174, 0, 0.5);
+$clr-yellow: rgb(255, 174, 0);
+$clr-yellow2:#352400;
 $full-hght: 100%;
 $full-wdth: 100%;
 $sect-hght: 50%;
@@ -15,29 +18,123 @@ $sect-wdth-mrgn: 10%;
 $card-hght: 300px;
 $card-wdth: 300px;
 
+.main {
+  font: "Source Serif Pro", serif;
+  color: white;
+  max-width: 950px;
+  margin: 0 auto;
+  background-color: $clr-ltblue;
+  height: auto;
+  overflow: auto;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.bg-img {
+  position: top;
+  padding: 60px 0px 0px 0px;
+  width: 100%;
+  min-height: 200px;
+  height: auto;
+  background-image: url('./Images/ron-swanson.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.title-section {
+  text-align: center;
+  height: 180px;
+  min-width: 350px;
+}
+h1 {
+  margin: 10px 0px;
+}
+.card-container {
+  height: 230px;
+  max-width: 920px;
+  padding: 10px;
+  width: auto;
+  @extend .flex-row;
+  @extend .flex-wrap;
+  @extend .space-around;
+}
+.card {
+  text-align: center;
+  height: auto;
+  min-height: 200px;
+  width: 250px;
+  padding: 15px;
+  background: $clr-grey;
+  border-radius: 10px;
+  border-width: 3px;
+  border-color: $clr-white;
+  margin: 10px 0px;
+}
+.card-contents {
+  @extend .flex-row;
+  width: 150px;
+  margin: 0 auto;
+}
+button {
+  color: white;
+  height: 50px;
+  width: 120px;
+  border-radius: 5px;
+  border-width: 3px;
+  background-color: transparent;
+  border-color: $clr-white;
+  margin: 10px 10px;
+  font-size: 20px
+}
+.big-button{
+  @extend button;
+  background: $clr-grey;
+  height: 50px;
+  width: 240px;
+}
+.lil-button {
+  @extend button;
+  font-size: 14px
+}
+.btn-off {
+  background: $clr-grey;
+}
+.btn {
+  background: $clr-btn;
+}
+.stars {
+  height: 30px;
+}
+.warning {
+  color: red;
+}
+.quote {
+  margin: 0px 0px 15px 0px;
+}
 .mrgn-t5 {
-  margin-top: 5%;
+  margin-top: 5px;
 }
-.mrgn-t15 {
-  margin-top: 15%;
+.mrgn-t25 {
+  margin-top: 25px;
 }
-.mrgn-t15 {
-  margin-top: 25%;
+.mrgn-t50 {
+  margin-top: 50px;
 }
-
+.mrgn-t100 {
+  margin-top: 100px;
+}
 .vert-rule {
   height: $full-hght;
 }
 .hor-rule {
-  width: $full-hght;
+  width: $full-wdth;
+
 }
 .vert-rule-sect {
-  height: 100px;
-  // min-height: $sect-hght-min;
+  height: 230px;
 }
 .hor-rule-sect {
-  // width: 100%;
-  margin: 20px;
+  margin: 15px;
   min-width: 350px;
 }
 .flex-col {
@@ -54,31 +151,6 @@ $card-wdth: 300px;
 .space-between {
   justify-content: space-between;
 }
-
-.card {
-  height: auto;
-  min-height: 300px;
-  width: 300px;
-  margin: 10px 0px 10px 0px;
-  padding: 15px;
-  background: $clr-grey;
-}
-.card-contents {
-  @extend .flex-row;
-  margin: auto;
-}
-.btn-off {
-  background: $clr-btn-off;
-}
-.btn {
-  background: $clr-btn;
-}
-.stars {
-  height: 30px;
-}
-.warning {
-  color: red;
-}
-.quote {
-  margin: 0px 0px 15px 0px;
+.space-around {
+  justify-content: space-between;
 }
