@@ -14,23 +14,17 @@ export default class QuoteCard extends Component {
   }
   componentDidUpdate = (prevProps, prevState) => {
     if (_.isEqual(this.props.quote, this.state.quote) === false) {
-      //   if (this.props.quote !== prevProps.quote
-      //     || this.props.quote.id !== prevProps.quote.id
-      //     || this.props.quote.myStars !== prevProps.quote.myStars) {
-      console.log('QUOTECARD UPDATE, SETSTATE')
       this.setState({ quote: this.props.quote })
     }
   }
   render() {
-    console.log(`QUOTECARD index ${index}, this.props`, this.props)
-    console.log(`QUOTECARD index ${index}, this.state`, this.state)
+
     let { index, starSelect } = this.state;
     let { id, saying, type } = this.state.quote;
     return (
       <div className='card' >
         <div className='hor-rule-card'>
           <p className='quote'>"{saying}"</p>
-          {/* <p className='quote'>id #:{id}</p> */}
           <p>Quote size: {type}</p>
           <p>Overall Rating {this.state.quote.stars === null ? '(Not Rated)' : ''}</p>
           <StarCard rating={{ starType: 'overall', stars: this.state.quote.stars }} rate={false} />
@@ -43,10 +37,3 @@ export default class QuoteCard extends Component {
     )
   }
 }
-    /* quote format = {
-id: null (null, or Number),
-type: 'medium' ('small', 'medium', 'large')
-saying: 'string',
-stars:null (0-5 = 0-5, 1 increments),
-myStars:null (0-5 = 0-5, 1 increments)
-} */

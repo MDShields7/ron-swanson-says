@@ -4,7 +4,6 @@ import _ from 'lodash';
 
 import './App.scss';
 import QuoteCard from './QuoteCards/QuoteCard'
-// import Ron from './Images/ron-swanson.jpg'
 
 class App extends Component {
   constructor(props) {
@@ -12,12 +11,10 @@ class App extends Component {
     this.state = {
       user: null,
       quotes: [],
-      // quotesTemp: [],
       indexList: [],
       quoteType: 'medium',
       quoteCards: [],
       lengthButtons: [],
-      // warning: ''
     }
   }
   componentDidMount = () => {
@@ -25,7 +22,6 @@ class App extends Component {
     this.loadTypeBtns()
   }
   componentDidUpdate = (prevProps, prevState) => {
-    const lastQuote = this.state.quotes.length - 1;
     if (_.isEqual(this.state.quotes, prevState.quotes) === false) {
       this.loadCards();
     } else if (prevState.quoteType !== this.state.quoteType) {
@@ -35,7 +31,6 @@ class App extends Component {
   checkVisitor = () => {
     axios.get("/api/visitor/check")
       .then(res => {
-        console.log('checkVisitor, res.data', res.data)
         this.setState({ user: res.data })
         if (res.data === '') {
           this.registerVisitor()
@@ -58,7 +53,6 @@ class App extends Component {
     let checkReq;
     let sayingResult;
     if (qNew === false) {
-      console.log('CASE 1')
       // REQUEST QUOTES
       const quotesReq = await axios.get('https://ron-swanson-quotes.herokuapp.com/v2/quotes/58')
       sayingResult = this.loopThruResults(quotesReq.data, quoteType)
@@ -72,7 +66,6 @@ class App extends Component {
         })
       }
     } else if (qNew === true) {
-      console.log('CASE 2')
       checkReq = await axios.get('/api/quote/getById', {
         params: { id: qId }
       })
@@ -81,14 +74,11 @@ class App extends Component {
     }
     // REQUEST QUOTE RATINGS
     let ratingsReq = await axios.get("/api/ratings/get", { params: { id: checkReq.data[0].rs_q_id } })
-    console.log('ratingsReq.data', ratingsReq.data)
     if (ratingsReq.data[0] === undefined) {
       ratingsReq.data[0] = { rs_rating: null }
     }
     // REQUEST QUOTE RATINGS BY THIS USER
-    console.log('myRatingReq, checkReq.data[0].rs_q_id', checkReq.data[0].rs_q_id, 'user.id', user.id)
     const myRatingReq = await axios.get("/api/myRating/get", { params: { quoteId: checkReq.data[0].rs_q_id, userId: user.id } })
-    console.log('myRatingReq.data', myRatingReq.data)
     if (myRatingReq.data[0] === undefined) {
       myRatingReq.data[0] = { rs_rating: null }
     }
@@ -101,9 +91,7 @@ class App extends Component {
       stars: ratingsReq.data[0].rs_rating,
       myStars: myRatingReq.data[0].rs_rating,
     }
-    console.log('newQuote', newQuote)
     if (qNew === true) {
-      // newQuotes[qIndex] = newQuote
       for (let j = 0; j < newQuotes.length; j++) {
         if (newQuotes[j]['id'] === qId) {
           newQuotes[j] = newQuote
@@ -112,7 +100,6 @@ class App extends Component {
     } else {
       newQuotes.push(newQuote)
     }
-    // console.log('newQuote', newQuote)
     this.setState({
       quotes: newQuotes
     })
@@ -125,7 +112,6 @@ class App extends Component {
       if (arr.length === 0) {
         return null;
       }
-      console.log('arr[i].rs_rating', arr[i].rs_rating)
       ratingAvg += arr[i].rs_rating;
       count++
     }
@@ -141,7 +127,6 @@ class App extends Component {
       quoteCards = [<p key='1'>Press the button to get quotes!</p>]
     } else {
       quoteCards = quotes.map(item => {
-        console.log('loadCards, item:', item)
         counter += 1;
         return <QuoteCard quote={item} value={counter} key={counter} starSelect={this.starSelect} starSubmit={this.starSubmit} />
       })
@@ -166,7 +151,6 @@ class App extends Component {
     this.setState({ lengthButtons: lengthButtons })
   }
   starSelect = async (rating, id, qIndex) => {
-    console.log('App.js, submit stars rating')
     let postRating = await axios.post('/api/rating/post', {
       quoteId: id, rating: rating, userId: this.state.user.id
     })
@@ -188,18 +172,13 @@ class App extends Component {
     if (newArr.length === 0) {
       return newArr
     } else {
-      console.log('newArr:', newArr, 'size:', type)
       newArr = newArr[Math.floor(Math.random() * newArr.length)];
-      console.log('newArr:', newArr, 'size:', type)
       return newArr;
     }
   }
   checkSize = (item, sizeType) => {
-    console.log('item', item)
     let itemArr = item.split(' ')
-    console.log('itemArr', itemArr)
     let size = itemArr.length;
-    console.log('size', size)
     if (sizeType === 'small') {
       if (5 > size) {
         return true;
@@ -216,8 +195,7 @@ class App extends Component {
   }
 
   render() {
-    const { quoteCards, lengthButtons, warning } = this.state;
-    console.log('App.js render console, this.state:', this.state);
+    const { quoteCards, lengthButtons } = this.state;
     return (
       <>
         <div className='main'>
@@ -227,9 +205,7 @@ class App extends Component {
             <h1 >Ron Swanson Says</h1>
             <div>{lengthButtons}</div>
             <button className='big-button' onClick={() => this.getAllQuoteInfo(false)}>Get a Quote</button>
-            {/* <p className='warning'>{warning}</p> */}
           </div>
-
           <div className='card-container'>
             {quoteCards}
           </div>

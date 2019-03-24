@@ -27,7 +27,6 @@ export default class StarCard extends Component {
   }
   componentDidUpdate = () => {
     if (_.isEqual(this.props.rating.stars, this.state.rating) === false) {
-      console.log('STARCARD UPDATE, SETSTATE')
       let newRating = _.cloneDeep(this.state.rating)
       if (this.state.starType === 'overall' && newRating !== null) {
         newRating = Math.round(newRating);
@@ -50,8 +49,6 @@ export default class StarCard extends Component {
     if (localRating !== null) {
       usedRating = localRating;
     }
-    console.log('StarCard, this.state', this.state)
-    console.log('StarCard, this.props', this.props)
     const hasProp = this.props.hasOwnProperty('starSelect')
 
     const showStars = () => {
