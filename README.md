@@ -1,68 +1,56 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#Ron Swanson Says App
 
-## Available Scripts
+## Technologies 
+React, Javascript, Express, Node, postgreSQL
 
-In the project directory, you can run:
+## The Site
+http://www.ron-swanson-says.us/
 
-### `npm start`
+### Elixir
+I made an attempt to learn Elixir. After studying it for a day, I decided to leave it, hoping to pick it up later- There were too many questions yet to answer. In tests I was able to produce a GenServer server call and response, but it did not include react or javascript.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## External API
+In having to hit this API, and then my database for the ID and ratings, I discovered a new pattern.
+Instead of setting state for each database call, I made all of the calls in one function, and set the state at the end. This pattern DRYed up my code (didn't clone state every call), but also prevented unneccesary re-renders.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## Reusable Components
+The prompt didn't neccessarily say how many quotes to show at a time, but I get a kick out of building reusable components so I made a card for every quote. The stars are also made of a reusabile card, which had to be adjusted to deal with overall and user ratings. 
 
-### `npm test`
+The brief is below with comments:
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+##Front End Stories
+###Show Me Swanson Swag
+####As an internet user I should be able to get Ron Swanson quotes on demand.
+It should allow me to click a button/image to get a Swanson word of wisdom
+*Complete: Each time 'Get A Quote' is clicked, a quote shows up below. There is a Ron Swanson image as well for full effect.*
 
-### `npm run build`
+###Right Size Swanson
+####As an internet user I should be able get quotes that are a size that I requested.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+It should allow me to determine if I want a small, medium or large quote
+*Complete: Each of these three sizes shows up as a button, each is selectable (and visibly selected at the time), only one at a time is selectable.*
+It should show me a quote that are 4 words or less if I choose small
+*Complete: This option is available, I believe I know all of the small quotes by heart now.*
+It should show me a quote that is 5 words to 12 words if I choose medium
+*Complete: This option is available.*
+It should show me a quote that is 13 words or larger if I choose large
+*Complete: This option is available. For a man of few words, the number of large quotes he said is impressive.*
+##Back End Stories
+###Vote for Awesomeness
+####As an internet user I should be able to rate a Ron Swanson Quote.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+It should let me give it rating of 1 to 5 on a quote
+*Complete: I have provided nice little star images to click. With these, users can rate the quote, even change their mind, until the submit button is clicked.*
+It should not let the same IP address / session rate more than 1 time
+*Complete: Without having to register, the user can return to the site and see previous ratings (for up to two weeks or so).*
+###Average Quote Rating
+####As an internet user I should be able to see the average rating for a Ron Swanson Quote.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+It should show me the average rating for a quote when displaying the quote
+*Complete: Overall ratings are given, and these cannot be changed by the user. '(Not Rated)' appears where a quote has not yet been rated, otherwise 1-5 stars shows up.*
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
