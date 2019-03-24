@@ -21,7 +21,9 @@ The brief is below with comments:
 ## Front End Stories
 ### Show Me Swanson Swag
 #### As an internet user I should be able to get Ron Swanson quotes on demand.
-It should allow me to click a button/image to get a Swanson word of wisdom
+
++ It should allow me to click a button/image to get a Swanson word of wisdom
+
 *Complete: Each time 'Get A Quote' is clicked, a quote shows up below. There is a Ron Swanson image as well for full effect.*
 
 ### Right Size Swanson
