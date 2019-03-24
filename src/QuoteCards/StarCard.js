@@ -26,6 +26,16 @@ export default class StarCard extends Component {
     }
   }
   componentDidUpdate = () => {
+    if (_.isEqual(this.props.rating.stars, this.state.rating) === false) {
+      console.log('STARCARD UPDATE, SETSTATE')
+      let newRating = _.cloneDeep(this.state.rating)
+      if (this.state.starType === 'overall' && newRating !== null) {
+        newRating = Math.round(newRating);
+        this.setState({ rating: newRating, rating: this.props.rating.stars })
+      } else {
+        this.setState({ rating: this.props.rating.stars })
+      }
+    }
   }
   handleSelect = () => {
     const { id, index, localRating } = this.state;
@@ -41,9 +51,8 @@ export default class StarCard extends Component {
       usedRating = localRating;
     }
     console.log('StarCard, this.state', this.state)
-    // console.log('StarCard, this.props', this.props)
+    console.log('StarCard, this.props', this.props)
     const hasProp = this.props.hasOwnProperty('starSelect')
-    // console.log('hasProp', hasProp)
 
     const showStars = () => {
       let starsMapped = [];

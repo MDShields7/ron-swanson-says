@@ -25,10 +25,8 @@ class App extends Component {
   }
   componentDidUpdate = (prevProps, prevState) => {
     const lastQuote = this.state.quotes.length - 1;
-    if (this.state.quotes[lastQuote] !== undefined) {
-      if (prevState.quotes[lastQuote] !== this.state.quotes[lastQuote]) {
-        this.loadCards();
-      }
+    if (_.isEqual(this.state.quotes, prevState.quotes) === false) {
+      this.loadCards();
     } else if (prevState.quoteType !== this.state.quoteType) {
       this.loadTypeBtns()
     }
@@ -84,15 +82,14 @@ class App extends Component {
     let ratingsReq = await axios.get("/api/ratings/get", { params: { id: checkReq.data[0].rs_q_id } })
     console.log('ratingsReq.data', ratingsReq.data)
     if (ratingsReq.data[0] === undefined) {
-      ratingsReq.data[0] = null
+      ratingsReq.data[0] = { rs_rating: null }
     }
     // REQUEST QUOTE RATINGS BY THIS USER
     console.log('myRatingReq, checkReq.data[0].rs_q_id', checkReq.data[0].rs_q_id, 'user.id', user.id)
     const myRatingReq = await axios.get("/api/myRating/get", { params: { quoteId: checkReq.data[0].rs_q_id, userId: user.id } })
     console.log('myRatingReq.data', myRatingReq.data)
-    if (myRatingReq.data[0] === undefined || myRatingReq.data[0].rs_rating === undefined) {
+    if (myRatingReq.data[0] === undefined) {
       myRatingReq.data[0] = { rs_rating: null }
-      // myRatingReq.data[0].rs_rating = null
     }
     const newQuotes = _.cloneDeep(this.state.quotes);
     let newQuote = _.cloneDeep(newQuotes[lastQuote])
@@ -100,15 +97,21 @@ class App extends Component {
       id: checkReq.data[0].rs_q_id,
       type: quoteType,
       saying: sayingResult,
-      stars: ratingsReq.data[0],
+      stars: ratingsReq.data[0].rs_rating,
       myStars: myRatingReq.data[0].rs_rating,
     }
+    console.log('newQuote', newQuote)
     if (qNew === true) {
-      newQuotes[qIndex] = newQuote
+      // newQuotes[qIndex] = newQuote
+      for (let j = 0; j < newQuotes.length; j++) {
+        if (newQuotes[j]['id'] === qId) {
+          newQuotes[j] = newQuote
+        }
+      }
     } else {
       newQuotes.push(newQuote)
     }
-    console.log('newQuote', newQuote)
+    // console.log('newQuote', newQuote)
     this.setState({
       quotes: newQuotes
     })
