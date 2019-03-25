@@ -1,13 +1,14 @@
 # Ron Swanson Says App
-
-## Technologies 
-React, Javascript, Express, Node, postgreSQL
+This app was built over 4 days in response to a coding challenge I received as part of a technical interview. I copied the requirements below with some coments.
 
 ## The Site
 http://www.ron-swanson-says.us/
 
+## Technologies 
+React, Javascript, Express, Node, postgreSQL
+
 ### Elixir
-I made an attempt to learn Elixir. After studying it for a day, I decided to leave it, hoping to pick it up later- There were too many questions yet to answer. In tests I was able to produce a GenServer server call and response, but it did not include react or javascript.
+Per requirements, I made an attempt to learn Elixir. After studying it for a day, I decided to leave it, hoping to pick it up later - I still had questions about how to implement Elixir. In tests I was able to produce a GenServer server call and response, but the test did not include react or javascript.
 
 ## External API
 In having to hit this API, and then my database for the ID and ratings, I discovered a new pattern.
@@ -16,7 +17,16 @@ Instead of setting state for each database call, I made all of the calls in one 
 ## Reusable Components
 The prompt didn't neccessarily say how many quotes to show at a time, but I get a kick out of building reusable components so I made a card for every quote. The stars are also made of a reusabile card, which had to be adjusted to deal with overall and user ratings. 
 
-The brief is below with comments:
+
+
+# Technical Chellenge Requirements
+Here is the bried I was sent, with my comments in italics:
+We feel the best way to measure how someone would work with our team is to simulate self-organized work. The following steps make up the technical interview. Any language/framework for submissions is acceptable. React (front end) and Elixir (back end) preferred.
+
+1. Create a GitHub repository for this project.
+2. Complete the stories below.
+
+Using the “Ron Swanson Quotes API” - https://github.com/jamesseanwright/ron-swanson-quotes#ron-swanson-quotes-api
 
 ## Front End Stories
 ### Show Me Swanson Swag
@@ -63,9 +73,3 @@ The brief is below with comments:
 + It should show me the average rating for a quote when displaying the quote
 
 *Complete: Overall ratings are given, and these cannot be changed by the user. '(Not Rated)' appears where a quote has not yet been rated, otherwise 1-5 stars shows up.*
-
-
-
-
-
-
