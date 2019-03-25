@@ -3,24 +3,19 @@ This app was built over 4 days in response to a coding challenge I received as p
 
 ## The Site
 http://www.ron-swanson-says.us/
-
 ## Technologies 
 React, Javascript, Express, Node, postgreSQL
-
 ### Elixir
 Per requirements, I made an attempt to learn Elixir. After studying it for a day, I decided to leave it, hoping to pick it up later - I still had questions about how to implement Elixir. In tests I was able to produce a GenServer server call and response, but the test did not include react or javascript.
-
-## External API
+### External API
 In having to hit this API, and then my database for the ID and ratings, I discovered a new pattern.
 Instead of setting state for each database call, I made all of the calls in one function, and set the state at the end. This pattern DRYed up my code (didn't clone state every call), but also prevented unneccesary re-renders.
-
-## Reusable Components
+### Reusable Components
 The prompt didn't neccessarily say how many quotes to show at a time, but I get a kick out of building reusable components so I made a card for every quote. The stars are also made of a reusabile card, which had to be adjusted to deal with overall and user ratings. 
 
-
-
 # Technical Chellenge Requirements
-Here is the bried I was sent, with my comments in italics:
+Here is the brief I was sent, with my comments in italics:
+
 We feel the best way to measure how someone would work with our team is to simulate self-organized work. The following steps make up the technical interview. Any language/framework for submissions is acceptable. React (front end) and Elixir (back end) preferred.
 
 1. Create a GitHub repository for this project.
